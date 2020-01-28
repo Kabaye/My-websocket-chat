@@ -11,8 +11,8 @@
     <groupId>edu.netcracker</groupId>
     <artifactId>chat</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>my-webscoket-chat</name>
-    <description>My webscoket chat</description>
+    <name>my-websocket-chat</name>
+    <description>My websocket chat</description>
 
     <properties>
         <java.version>1.8</java.version>
