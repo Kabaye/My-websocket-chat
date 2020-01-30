@@ -1,55 +1,38 @@
 package edu.netcracker.chat.controller;
 
 import edu.netcracker.chat.entity.OldMessagesRequest;
+import edu.netcracker.chat.entity.ResponseType;
 import edu.netcracker.chat.entity.SimpleMessage;
-import edu.netcracker.chat.repository.ChatRepository;
-import edu.netcracker.chat.repository.CustomChatRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import edu.netcracker.chat.entity.SimpleMessageResponse;
+import edu.netcracker.chat.service.SocketService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-
-import java.util.List;
-import java.util.Objects;
 
 @Controller
 public class ChatController {
-    private final ChatRepository chatRepository;
-    private final CustomChatRepository customChatRepository;
-    private final SimpMessagingTemplate simpMessagingTemplate;
+    private final SocketService socketService;
 
-    @Autowired
-    public ChatController(ChatRepository chatRepository, CustomChatRepository customChatRepository, SimpMessagingTemplate simpMessagingTemplate) {
-        this.chatRepository = chatRepository;
-        this.customChatRepository = customChatRepository;
-        this.simpMessagingTemplate = simpMessagingTemplate;
+    public ChatController(SocketService socketService) {
+        this.socketService = socketService;
     }
 
-    @MessageMapping("/chat/send-message")
+    @MessageMapping("/chat/send_message")
     @SendTo("/chat/public")
-    public SimpleMessage sendMessage(@Payload SimpleMessage simpleMessage) {
-        return chatRepository.save(simpleMessage);
+    public SimpleMessageResponse sendMessage(@Payload SimpleMessage simpleMessage) {
+        return SimpleMessageResponse.builder().responseType(ResponseType.SIMPLE_MESSAGE).simpleMessage(socketService.sendMessage(simpleMessage)).build();
     }
 
-    @MessageMapping("/chat/add-user")
+    @MessageMapping("/chat/add_user")
     @SendTo("/chat/public")
-    public SimpleMessage addUser(@Payload SimpleMessage simpleMessage, SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
-        String clientNickname = (String) simpMessageHeaderAccessor.getSessionAttributes().get("clientNickname");
-        if (Objects.isNull(clientNickname) && Objects.nonNull(simpleMessage.getClientNickname())) {
-            simpMessageHeaderAccessor.getSessionAttributes().put("clientNickname", simpleMessage.getClientNickname());
-        } else {
-            throw new RuntimeException("User with such nickname is already in chat. Use another one.");
-        }
-        simpMessagingTemplate.convertAndSendToUser(clientNickname, "/chat/public/" + clientNickname, customChatRepository.getMessagesInRange(0, 10));
-        return chatRepository.save(simpleMessage);
-
+    public SimpleMessageResponse addClient(@Payload SimpleMessage simpleMessage, SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
+        return SimpleMessageResponse.builder().responseType(ResponseType.SIMPLE_MESSAGE).simpleMessage(socketService.addClient(simpleMessage, simpMessageHeaderAccessor)).build();
     }
 
-    @MessageMapping("/chat/get-old-messages")
-    public List<SimpleMessage> getOldMessages(@Payload OldMessagesRequest oldMessagesRequest) {
-        return customChatRepository.getMessagesInRange(oldMessagesRequest.getLowerBound(), oldMessagesRequest.getAmount());
+    @MessageMapping("/chat/get_old_messages")
+    public void getOldMessages(@Payload OldMessagesRequest oldMessagesRequest) {
+        socketService.getOldMessages(oldMessagesRequest);
     }
 }

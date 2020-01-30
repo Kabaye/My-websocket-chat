@@ -9,7 +9,7 @@ const messageArea = document.querySelector('#messageArea');
 const connectingElement = document.querySelector('.connecting');
 
 let stompClient = null;
-let username = null;
+let nickname = null;
 
 const colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
@@ -17,9 +17,9 @@ const colors = [
 ];
 
 function connect(event) {
-    username = document.querySelector('#name').value.trim();
+    nickname = document.querySelector('#name').value.trim();
 
-    if (username) {
+    if (nickname) {
         usernamePage.classList.add('hidden');
         chatPage.classList.remove('hidden');
 
@@ -31,57 +31,64 @@ function connect(event) {
     event.preventDefault();
 }
 
-
 function onConnected() {
     // Subscribe to the Public Chat
     stompClient.subscribe('/chat/public', onMessageReceived);
+    stompClient.subscribe('/chat/public/' + nickname, onMessageReceived);
 
     // Tell your username to the server
-    stompClient.send("/chat/add-user",
+    stompClient.send("/chat/add_user",
         {},
-        JSON.stringify({client_nickname: username, message_type: 'JOIN'})
+        JSON.stringify({client_nickname: nickname, message_type: 'JOIN'})
     );
 
     connectingElement.classList.add('hidden');
 }
-
 
 function onError(error) {
     connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
     connectingElement.style.color = 'red';
 }
 
-
 function sendMessage(event) {
     const messageContent = messageInput.value.trim();
 
     if (messageContent && stompClient) {
         const chatMessage = {
-            client_nickname: username,
+            client_nickname: nickname,
             content: messageInput.value,
             message_type: 'WRITE'
         };
 
-        stompClient.send("/chat/send-message", {}, JSON.stringify(chatMessage));
+        stompClient.send("/chat/send_message", {}, JSON.stringify(chatMessage));
         messageInput.value = '';
     }
     event.preventDefault();
 }
 
-function onMessageReceived(payload) {
+function processPayload(payload, needToGoDown) {
     const message = JSON.parse(payload.body);
-
-    if (Array.isArray(message)) {
-        for (let i = 0; i < message.length; i++) {
-            processSimpleMessage(message[i]);
+    if (message.response_type === 'SIMPLE_MESSAGE') {
+        if (message.simple_message.client_nickname === nickname) {
+            needToGoDown = true;
         }
-    } else {
-        processSimpleMessage(message);
+        processSimpleMessage(message.simple_message, false, needToGoDown);
+    } else if (message.response_type === 'OLD_MESSAGES') {
+        for (let i = message.old_messages.length - 1; i >= 0; i--) {
+            processSimpleMessage(message.old_messages[i], true, false);
+        }
     }
 }
 
-function processSimpleMessage(message) {
+function onMessageReceived(payload) {
+    let needToGoDown = messageArea.scrollTop + messageArea.clientHeight === messageArea.scrollHeight;
+    processPayload(payload, needToGoDown);
+}
+
+function processSimpleMessage(message, isFirst, needToGoDown) {
     let messageElement = document.createElement('li');
+    messageElement.style.wordBreak = 'break-all';
+    messageElement.style.maxWidth = '100%';
     if (message.message_type === 'JOIN') {
         messageElement.classList.add('event-message');
         message.content = message.client_nickname + ' joined!';
@@ -109,10 +116,15 @@ function processSimpleMessage(message) {
     textElement.appendChild(messageText);
     messageElement.appendChild(textElement);
 
-    messageArea.appendChild(messageElement);
-    messageArea.scrollTop = messageArea.scrollHeight;
-}
+    if (isFirst) {
+        let firstChild = messageArea.childNodes[0];
+        messageArea.insertBefore(messageElement, firstChild);
+    } else {
+        messageArea.appendChild(messageElement);
+    }
 
+    messageArea.scrollTop = needToGoDown ? messageArea.scrollHeight : messageArea.scrollTop;
+}
 
 function getAvatarColor(client_nickname) {
     let hash = 0;
@@ -124,5 +136,24 @@ function getAvatarColor(client_nickname) {
     return colors[index];
 }
 
-usernameForm.addEventListener('submit', connect, true)
-messageForm.addEventListener('submit', sendMessage, true)
+function onScroll() {
+    if (messageArea.scrollTop < 100) {
+        getOldMessages(messageArea.childNodes.length, 10)
+    }
+}
+
+function getOldMessages(lowerBound, amount) {
+    if (stompClient) {
+        const oldMessageRequest = {
+            client_nickname: nickname,
+            lower_bound: lowerBound,
+            amount: amount
+        };
+
+        stompClient.send("/chat/get_old_messages", {}, JSON.stringify(oldMessageRequest));
+    }
+}
+
+usernameForm.addEventListener('submit', connect, true);
+messageForm.addEventListener('submit', sendMessage, true);
+

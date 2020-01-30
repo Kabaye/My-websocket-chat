@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class DefaultChatRepository implements CustomChatRepository {
+public class CustomChatRepositoryImplementation implements CustomChatRepository {
     private final MongoTemplate mongoTemplate;
 
     @Autowired
-    public DefaultChatRepository(MongoTemplate mongoTemplate) {
+    public CustomChatRepositoryImplementation(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 
@@ -24,8 +24,10 @@ public class DefaultChatRepository implements CustomChatRepository {
     public List<SimpleMessage> getMessagesInRange(long lowerBound, long amount) {
         long documentAmount = mongoTemplate.count(new Query(), "messages");
         List<AggregationOperation> aggregationOperations = new ArrayList<>();
-        aggregationOperations.add(Aggregation.limit(documentAmount - lowerBound * amount));
-        aggregationOperations.add(Aggregation.skip(documentAmount - (lowerBound + 1) * amount));
+        long limit = documentAmount - lowerBound;
+        long skip = documentAmount - lowerBound - amount;
+        aggregationOperations.add(Aggregation.limit(limit));
+        aggregationOperations.add(Aggregation.skip(skip));
         return mongoTemplate.aggregate(Aggregation.newAggregation(SimpleMessage.class, aggregationOperations),
                 SimpleMessage.class, SimpleMessage.class)
                 .getMappedResults();
