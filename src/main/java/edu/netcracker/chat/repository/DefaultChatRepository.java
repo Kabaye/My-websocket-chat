@@ -24,8 +24,8 @@ public class DefaultChatRepository implements CustomChatRepository {
     public List<SimpleMessage> getMessagesInRange(long lowerBound, long amount) {
         long documentAmount = mongoTemplate.count(new Query(), "messages");
         List<AggregationOperation> aggregationOperations = new ArrayList<>();
-        aggregationOperations.add(Aggregation.limit(documentAmount - lowerBound * 10));
-        aggregationOperations.add(Aggregation.skip(documentAmount - lowerBound * 10 - amount));
+        aggregationOperations.add(Aggregation.limit(documentAmount - lowerBound * amount));
+        aggregationOperations.add(Aggregation.skip(documentAmount - (lowerBound + 1) * amount));
         return mongoTemplate.aggregate(Aggregation.newAggregation(SimpleMessage.class, aggregationOperations),
                 SimpleMessage.class, SimpleMessage.class)
                 .getMappedResults();
