@@ -23,7 +23,7 @@ function connect(event) {
         usernamePage.classList.add('hidden');
         chatPage.classList.remove('hidden');
 
-        const socket = new WebSocket('ws://0.0.0.0:18220/ws');
+        const socket = new WebSocket('wss://wsch.herokuapp.com//ws');
         stompClient = Stomp.over(socket);
 
         stompClient.connect({}, onConnected, onError);
