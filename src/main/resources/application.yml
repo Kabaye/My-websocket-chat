@@ -5,3 +5,6 @@ spring:
   data:
     mongodb:
       database: chat-app
+#      username: dbUser1
+#      password: Nh2XRSbY2C3RWcSo
+      uri: mongodb://dbUser1:<password>@kabayedb-shard-00-00-gw5zw.gcp.mongodb.net:27017,kabayedb-shard-00-01-gw5zw.gcp.mongodb.net:27017,kabayedb-shard-00-02-gw5zw.gcp.mongodb.net:27017/test?ssl=true&replicaSet=KabayeDB-shard-0&authSource=admin&retryWrites=true&w=majority
