@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="">
 <head>
     <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0" name="viewport">
     <title>Spring Boot WebSocket Chat Application | CalliCoder</title>
@@ -15,7 +15,8 @@
         <h1 class="title">Type your username</h1>
         <form id="usernameForm" name="usernameForm">
             <div class="form-group">
-                <input autocomplete="off" class="form-control" id="name" placeholder="Username" type="text"/>
+                <label for="name"></label><input autocomplete="off" class="form-control" id="name"
+                                                 placeholder="Username" type="text"/>
             </div>
             <div class="form-group">
                 <button class="accent username-submit" type="submit">Start Chatting</button>
@@ -36,8 +37,9 @@
         <form id="messageForm" name="messageForm" nameForm="messageForm">
             <div class="form-group">
                 <div class="input-group clearfix">
-                    <input autocomplete="off" class="form-control" id="message" placeholder="Type a message..."
-                           type="text"/>
+                    <label for="message"></label><input autocomplete="off" class="form-control" id="message"
+                                                        placeholder="Type a message..."
+                                                        type="text"/>
                     <button class="primary" type="submit">Send</button>
                 </div>
             </div>
