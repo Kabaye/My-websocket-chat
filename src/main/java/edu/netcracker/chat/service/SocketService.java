@@ -32,18 +32,18 @@ public class SocketService {
             throw new RuntimeException("User with such nickname is already in the chat. Use another one.");
         }
 
-        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye1").messageType(SimpleMessage.Type.JOIN).build().setCurrentTime());
-        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye1").content("Hiiii!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
-        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye2").messageType(SimpleMessage.Type.JOIN).build().setCurrentTime());
-        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye2").content("Hello there!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
-        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye2").content("Who's here??").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
-        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye1").content("I am!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
-        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye2").content("Oh, nice to meet you, Kabaye1!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
-        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye1").content("Nice to meet you too, Kabaye2!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
-        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye3").messageType(SimpleMessage.Type.JOIN).build().setCurrentTime());
-        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye2").content("Hello, Kabaye3!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
-        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye1").content("Hello!!!!!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
-        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye3").content("Hi to everybody!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
+//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye1").messageType(SimpleMessage.Type.JOIN).build().setCurrentTime());
+//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye1").content("Hiiii!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
+//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye2").messageType(SimpleMessage.Type.JOIN).build().setCurrentTime());
+//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye2").content("Hello there!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
+//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye2").content("Who's here??").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
+//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye1").content("I am!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
+//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye2").content("Oh, nice to meet you, Kabaye1!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
+//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye1").content("Nice to meet you too, Kabaye2!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
+//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye3").messageType(SimpleMessage.Type.JOIN).build().setCurrentTime());
+//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye2").content("Hello, Kabaye3!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
+//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye1").content("Hello!!!!!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
+//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye3").content("Hi to everybody!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
 
         simpMessagingTemplate.convertAndSend("/chat/public/" + simpleMessage.getClientNickname(),
                 OldMessagesResponse.builder().responseType(ResponseType.OLD_MESSAGES)
