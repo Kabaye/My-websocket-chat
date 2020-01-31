@@ -5,6 +5,7 @@
     <title>Spring Boot WebSocket Chat Application | Kabaye</title>
     <link href="/css/main.css" rel="stylesheet"/>
     <script>
+        let port = 80;
         function onInit() {
             let xhr = new XMLHttpRequest();
             xhr.open('GET', '/port');
@@ -14,12 +15,12 @@
                 if (xhr.status !== 200) { // analyze HTTP status of the response
                     alert(`Error ${xhr.status}: ${xhr.statusText}`); // e.g. 404: Not Found
                 } else { // show the result
-                    return xhr.responseText // responseText is the server
+                    port = xhr.responseText // responseText is the server
                 }
             };
         }
 
-        let port = onInit();
+        onInit();
     </script>
 </head>
 <body>
