@@ -11,6 +11,8 @@ const connectingElement = document.querySelector('.connecting');
 let stompClient = null;
 let nickname = null;
 
+let downloadOldMessages;
+
 const colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
@@ -141,11 +143,16 @@ function getAvatarColor(client_nickname) {
 
 function onScroll() {
     if (messageArea.scrollTop < 100) {
-        getOldMessages(messageArea.childNodes.length, 10)
+        if (!downloadOldMessages) {
+            getOldMessages(messageArea.childNodes.length, 10)
+        }
+    } else {
+        downloadOldMessages = false;
     }
 }
 
 function getOldMessages(lowerBound, amount) {
+    downloadOldMessages = true;
     if (stompClient) {
         const oldMessageRequest = {
             client_nickname: nickname,
