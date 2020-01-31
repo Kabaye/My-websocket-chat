@@ -160,7 +160,7 @@ function getAvatarColor(client_nickname) {
 }
 
 function onScroll() {
-    if (messageArea.scrollTop < messageArea.childNodes[0].offsetHeight) {
+    if (messageArea.scrollTop < 50) {
         if (!downloadOldMessages) {
             getOldMessages(messageArea.childNodes.length, 10)
         }
