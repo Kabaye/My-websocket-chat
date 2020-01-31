@@ -11,12 +11,16 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 @Service
 public class SocketService {
     private final CustomChatRepositoryImplementation customChatRepository;
     private final ChatRepository chatRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
+
+    private final Set<String> sessions = new ConcurrentSkipListSet<>();
 
     public SocketService(CustomChatRepositoryImplementation customChatRepository, ChatRepository chatRepository, SimpMessagingTemplate simpMessagingTemplate) {
         this.customChatRepository = customChatRepository;
@@ -25,29 +29,16 @@ public class SocketService {
     }
 
     public SimpleMessage addClient(SimpleMessage simpleMessage, SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
-        String clientNickname = (String) simpMessageHeaderAccessor.getSessionAttributes().get("clientNickname");
-        if (Objects.isNull(clientNickname) && Objects.nonNull(simpleMessage.getClientNickname())) {
+        if (checkIfNicknameUnique(simpleMessage.getClientNickname()) && Objects.nonNull(simpleMessage.getClientNickname())) {
+            sessions.add(simpleMessage.getClientNickname().toLowerCase());
             simpMessageHeaderAccessor.getSessionAttributes().put("clientNickname", simpleMessage.getClientNickname());
         } else {
             throw new RuntimeException("User with such nickname is already in the chat. Use another one.");
         }
 
-//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye1").messageType(SimpleMessage.Type.JOIN).build().setCurrentTime());
-//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye1").content("Hiiii!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
-//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye2").messageType(SimpleMessage.Type.JOIN).build().setCurrentTime());
-//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye2").content("Hello there!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
-//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye2").content("Who's here??").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
-//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye1").content("I am!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
-//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye2").content("Oh, nice to meet you, Kabaye1!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
-//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye1").content("Nice to meet you too, Kabaye2!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
-//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye3").messageType(SimpleMessage.Type.JOIN).build().setCurrentTime());
-//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye2").content("Hello, Kabaye3!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
-//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye1").content("Hello!!!!!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
-//        chatRepository.save(SimpleMessage.builder().clientNickname("Kabaye3").content("Hi to everybody!").messageType(SimpleMessage.Type.WRITE).build().setCurrentTime());
-
         simpMessagingTemplate.convertAndSend("/chat/public/" + simpleMessage.getClientNickname(),
                 OldMessagesResponse.builder().responseType(ResponseType.OLD_MESSAGES)
-                        .oldMessages(customChatRepository.getMessagesInRange(0, 10))
+                        .oldMessages(customChatRepository.getMessagesInRange(0, 15))
                         .build());
         return chatRepository.save(simpleMessage.setCurrentTime());
     }
@@ -68,5 +59,9 @@ public class SocketService {
         if (Objects.nonNull(simpMessageHeaderAccessor.getSessionAttributes())) {
             simpMessagingTemplate.convertAndSend("chat/error/" + simpMessageHeaderAccessor.getSessionAttributes().get("clientNickname"), payload);
         }
+    }
+
+    public boolean checkIfNicknameUnique(String nickname) {
+        return !sessions.contains(nickname.toLowerCase());
     }
 }

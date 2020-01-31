@@ -27,11 +27,13 @@ public class CustomChatRepositoryImplementation implements CustomChatRepository 
         List<AggregationOperation> aggregationOperations = new ArrayList<>();
         long limit = documentAmount - lowerBound;
         long skip = documentAmount - lowerBound - amount;
-        if (skip <= 0 || limit <= skip) {
+        if (limit <= 0) {
             return Collections.emptyList();
         }
         aggregationOperations.add(Aggregation.limit(limit));
-        aggregationOperations.add(Aggregation.skip(skip));
+        if (skip > 0) {
+            aggregationOperations.add(Aggregation.skip(skip));
+        }
         return mongoTemplate.aggregate(Aggregation.newAggregation(SimpleMessage.class, aggregationOperations),
                 SimpleMessage.class, SimpleMessage.class)
                 .getMappedResults();

@@ -11,16 +11,14 @@ const connectingElement = document.querySelector('.connecting');
 let stompClient = null;
 let nickname = null;
 
-let downloadOldMessages;
+let downloadOldMessages = true;
 
 const colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
 
-function connect(event) {
-    nickname = document.querySelector('#name').value.trim();
-
+function connect() {
     if (nickname) {
         usernamePage.classList.add('hidden');
         chatPage.classList.remove('hidden');
@@ -30,6 +28,26 @@ function connect(event) {
 
         stompClient.connect({}, onConnected, onError);
     }
+}
+
+function checkNickname(event) {
+    nickname = document.querySelector('#name').value.trim();
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', '/check-nickname', true);
+
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            connect();
+        } else {
+            alert('Your nickname is not unique');
+            const a = document.querySelector('#name');
+            a.value = '';
+            a.style.borderColor = 'red';
+        }
+    };
+
+    xhr.send(nickname);
+
     event.preventDefault();
 }
 
@@ -142,7 +160,7 @@ function getAvatarColor(client_nickname) {
 }
 
 function onScroll() {
-    if (messageArea.scrollTop < 100) {
+    if (messageArea.scrollTop < messageArea.childNodes[0].offsetHeight) {
         if (!downloadOldMessages) {
             getOldMessages(messageArea.childNodes.length, 10)
         }
@@ -164,6 +182,6 @@ function getOldMessages(lowerBound, amount) {
     }
 }
 
-usernameForm.addEventListener('submit', connect, true);
+usernameForm.addEventListener('submit', checkNickname, true);
 messageForm.addEventListener('submit', sendMessage, true);
 
