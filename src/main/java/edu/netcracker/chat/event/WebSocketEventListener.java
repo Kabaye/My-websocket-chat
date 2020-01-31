@@ -24,10 +24,9 @@ public class WebSocketEventListener {
     }
 
     @EventListener
-    public SimpleMessageResponse handleWebSocketDisconnect(SessionDisconnectEvent event) {
+    public void handleWebSocketDisconnect(SessionDisconnectEvent event) {
         Map<String, Object> simpSessionAttributes = StompHeaderAccessor.wrap(event.getMessage()).getSessionAttributes();
         if (Objects.nonNull(simpSessionAttributes)) {
-            System.out.println(simpSessionAttributes);
             SimpleMessageResponse simpleMessageResponse = SimpleMessageResponse.builder()
                     .responseType(ResponseType.SIMPLE_MESSAGE)
                     .simpleMessage(chatRepository.save(
@@ -38,7 +37,8 @@ public class WebSocketEventListener {
                                     .setCurrentTime()))
                     .build();
             simpMessagingTemplate.convertAndSend("/chat/public", simpleMessageResponse);
+        } else {
+            throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 }
