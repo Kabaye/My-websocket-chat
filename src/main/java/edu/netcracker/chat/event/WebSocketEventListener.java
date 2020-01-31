@@ -1,8 +1,8 @@
 package edu.netcracker.chat.event;
 
-import edu.netcracker.chat.entity.ResponseType;
-import edu.netcracker.chat.entity.SimpleMessage;
-import edu.netcracker.chat.entity.SimpleMessageResponse;
+import edu.netcracker.chat.model.ResponseType;
+import edu.netcracker.chat.model.SimpleMessage;
+import edu.netcracker.chat.model.SimpleMessageResponse;
 import edu.netcracker.chat.repository.ChatRepository;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

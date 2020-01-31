@@ -1,6 +1,6 @@
 package edu.netcracker.chat.repository;
 
-import edu.netcracker.chat.entity.SimpleMessage;
+import edu.netcracker.chat.model.SimpleMessage;
 
 import java.util.List;
 

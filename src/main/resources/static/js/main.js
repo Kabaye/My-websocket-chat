@@ -35,6 +35,7 @@ function onConnected() {
     // Subscribe to the Public Chat
     stompClient.subscribe('/chat/public', onMessageReceived);
     stompClient.subscribe('/chat/public/' + nickname, onMessageReceived);
+    stompClient.subscribe('/chat/error/' + nickname, onMessageReceived);
 
     // Tell your username to the server
     stompClient.send("/chat/add_user",
@@ -77,6 +78,8 @@ function processPayload(payload, needToGoDown) {
         for (let i = message.old_messages.length - 1; i >= 0; i--) {
             processSimpleMessage(message.old_messages[i], true, false);
         }
+    } else if (message.response_type === 'ERROR') {
+        alert(message.error_message);
     }
 }
 

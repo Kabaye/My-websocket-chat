@@ -1,16 +1,14 @@
-package edu.netcracker.chat.entity;
+package edu.netcracker.chat.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 @Builder
-public class OldMessagesResponse {
-    @JsonProperty("old_messages")
-    private List<SimpleMessage> oldMessages;
+public class SimpleMessageResponse {
+    @JsonProperty("simple_message")
+    private SimpleMessage simpleMessage;
     @JsonProperty("response_type")
     private ResponseType responseType;
 }

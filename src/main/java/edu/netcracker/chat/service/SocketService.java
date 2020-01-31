@@ -1,9 +1,9 @@
 package edu.netcracker.chat.service;
 
-import edu.netcracker.chat.entity.OldMessagesRequest;
-import edu.netcracker.chat.entity.OldMessagesResponse;
-import edu.netcracker.chat.entity.ResponseType;
-import edu.netcracker.chat.entity.SimpleMessage;
+import edu.netcracker.chat.model.OldMessagesRequest;
+import edu.netcracker.chat.model.OldMessagesResponse;
+import edu.netcracker.chat.model.ResponseType;
+import edu.netcracker.chat.model.SimpleMessage;
 import edu.netcracker.chat.repository.ChatRepository;
 import edu.netcracker.chat.repository.CustomChatRepositoryImplementation;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -62,5 +62,11 @@ public class SocketService {
                 OldMessagesResponse.builder().responseType(ResponseType.OLD_MESSAGES)
                         .oldMessages(customChatRepository.getMessagesInRange(oldMessagesRequest.getLowerBound(), oldMessagesRequest.getAmount()))
                         .build());
+    }
+
+    public void sendErrorToClient(SimpMessageHeaderAccessor simpMessageHeaderAccessor, Object payload) {
+        if (Objects.nonNull(simpMessageHeaderAccessor.getSessionAttributes())) {
+            simpMessagingTemplate.convertAndSend("chat/error/" + simpMessageHeaderAccessor.getSessionAttributes().get("clientNickname"), payload);
+        }
     }
 }

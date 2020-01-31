@@ -1,6 +1,6 @@
 package edu.netcracker.chat.repository;
 
-import edu.netcracker.chat.entity.SimpleMessage;
+import edu.netcracker.chat.model.SimpleMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -26,6 +27,9 @@ public class CustomChatRepositoryImplementation implements CustomChatRepository 
         List<AggregationOperation> aggregationOperations = new ArrayList<>();
         long limit = documentAmount - lowerBound;
         long skip = documentAmount - lowerBound - amount;
+        if (skip <= 0 || limit <= skip) {
+            return Collections.emptyList();
+        }
         aggregationOperations.add(Aggregation.limit(limit));
         aggregationOperations.add(Aggregation.skip(skip));
         return mongoTemplate.aggregate(Aggregation.newAggregation(SimpleMessage.class, aggregationOperations),
