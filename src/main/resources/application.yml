@@ -7,4 +7,4 @@ spring:
       database: chat-app
       #      username: dbUser1
       #      password: ZNerHEkbqxL8DW51
-      uri: mongodb://dbUser1:ZNerHEkbqxL8DW51@kabayedb-shard-00-00-gw5zw.gcp.mongodb.net:27017,kabayedb-shard-00-01-gw5zw.gcp.mongodb.net:27017,kabayedb-shard-00-02-gw5zw.gcp.mongodb.net:27017/test?ssl=true&replicaSet=KabayeDB-shard-0&authSource=admin&retryWrites=true&w=majority&maxIdleTimeMS=30000
+#      uri: mongodb://dbUser1:ZNerHEkbqxL8DW51@kabayedb-shard-00-00-gw5zw.gcp.mongodb.net:27017,kabayedb-shard-00-01-gw5zw.gcp.mongodb.net:27017,kabayedb-shard-00-02-gw5zw.gcp.mongodb.net:27017/test?ssl=true&replicaSet=KabayeDB-shard-0&authSource=admin&retryWrites=true&w=majority&maxIdleTimeMS=30000
