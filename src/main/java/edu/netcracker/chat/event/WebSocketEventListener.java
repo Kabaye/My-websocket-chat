@@ -37,6 +37,8 @@ public class WebSocketEventListener {
                                     .setCurrentTime()))
                     .build();
             simpMessagingTemplate.convertAndSend("/chat/public", simpleMessageResponse);
+        } else {
+            throw new RuntimeException();
         }
     }
 }
