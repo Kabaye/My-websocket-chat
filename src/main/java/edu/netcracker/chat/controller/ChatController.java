@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Controller
 public class ChatController {
     private final SocketService socketService;
-//    private final Environment environment;
 
     public ChatController(SocketService socketService) {
         this.socketService = socketService;
@@ -48,12 +47,6 @@ public class ChatController {
     public void handleException(Exception exc, SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
         socketService.sendErrorToClient(simpMessageHeaderAccessor, exc.getMessage());
     }
-//
-//    @RequestMapping("/port")
-//    @ResponseBody
-//    public String getPort() {
-//        return String.valueOf(environment.getProperty("server.port"));
-//    }
 
     @PostMapping("/check-nickname")
     public ResponseEntity<Void> checkNickname(@RequestBody String nickname) {
